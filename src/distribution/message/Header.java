@@ -9,36 +9,24 @@ public class Header implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private String destination;
+	private String topic;
 	private Operation operation;
-
-	public Header() {
-		
-	}
 	
-	public Header(String destination, Operation op) {
-		this.setDestination(destination);
-		this.setOperation(op);
-	}
-	
-	public String getDestination() {
-		return destination;
-	}
-
-	public void setDestination(String destination) {
-		this.destination = destination;
+	public Header(String topic, Operation operation) {
+		this.topic = topic;
+		this.operation = operation;
 	}
 	
 	@Override
 	public String toString() {
-		return "Header [destination=" + destination + "]";
+		return "Header [topic=" + topic + "]";
 	}
 
 	public Operation getOperation() {
 		return operation;
 	}
-
-	public void setOperation(Operation operation) {
-		this.operation = operation;
+	
+	public String getTopic() {
+		return topic;
 	}
 }

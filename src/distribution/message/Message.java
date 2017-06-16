@@ -11,12 +11,7 @@ public class Message implements Serializable{
 
 	private Header header;
 	private Payload payload;
-	
-	public Message() {
-		this.setHeader(new Header());
-		this.setPayload(new Payload());
-	}
-
+		
 	public Message(Header header, Payload payload){
 		this.setHeader(header);
 		this.setPayload(payload);
@@ -31,6 +26,7 @@ public class Message implements Serializable{
 //	private void readObjectNoData() throws ObjectStreamException {
 //		
 //	}
+	
 	public Header getHeader() {
 		return header;
 	}

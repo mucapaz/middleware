@@ -1,12 +1,14 @@
 package infrastructure;
 
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 
 import distribution.QueueManager;
+import distribution.message.Message;
 
 public class ServerRequestHandler {
 	
@@ -15,25 +17,26 @@ public class ServerRequestHandler {
 	private int port;
 	private ServerSocket socket;
 
-	private Map<Integer, Socket> connectionSocketMap;
-	private int connectionSocketCounter = 0;
+	private Map<Integer, ObjectOutputStream> connectionMap;
+	private int connectionCounter = 0;
 	
 	public ServerRequestHandler(int port, QueueManager queueManager) throws IOException{
 		this.port = port;
 		this.socket = new ServerSocket(port);
 		this.queueManager = queueManager;
 		
-		this.connectionSocketMap = new HashMap<Integer, Socket>();
+		this.connectionMap = new HashMap<Integer, ObjectOutputStream>();
 	}
 	
 	public void connect(){
 		
 		try {
 			Socket clientSocket = socket.accept();
-			connectionSocketCounter++;
-			connectionSocketMap.put(connectionSocketCounter, clientSocket);
+			ObjectOutputStream output = new ObjectOutputStream(clientSocket.getOutputStream());
+			connectionCounter++;
+			connectionMap.put(connectionCounter, output);
 			
-			ConnectionThread connection = new ConnectionThread(connectionSocketCounter,
+			ConnectionThread connection = new ConnectionThread(connectionCounter,
 					clientSocket, queueManager);
 			
 			new Thread(connection).start();
@@ -44,6 +47,21 @@ public class ServerRequestHandler {
 		}
 	}
 	
-	
+	public void send(int connectionId, Message msg){
+		ObjectOutputStream output = connectionMap.get(connectionId);
+		
+		if(output!=null){
+			try {
+				output.writeObject(msg);
+				output.flush();
+			} catch (IOException e) {
+				
+				connectionMap.remove(connectionId);
+				
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
 	
 }

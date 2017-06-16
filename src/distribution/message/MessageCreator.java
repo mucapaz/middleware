@@ -6,19 +6,14 @@ public class MessageCreator {
 	
 	private Message message;
 
-	public MessageCreator() {
-		this.setMessage(new Message());
-	}
+//	public MessageCreator() {
+//		this.setMessage(new Message());
+//	}
 	
-	public MessageCreator(String destination, Operation op, List<Object> content) {
-		Header header = new Header(destination, op);
+	public MessageCreator(String topic, Operation op, List<Object> content) {
+		Header header = new Header(topic, op);
 		Payload payload = new Payload(content);
 		this.setMessage(new Message(header, payload));
-	}
-	
-	public void setDestination(String destination) {
-		Header header = getMessage().getHeader();
-		header.setDestination(destination);
 	}
 	
 	public void addContent(Object object) {
