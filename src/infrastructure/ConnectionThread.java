@@ -26,7 +26,7 @@ public class ConnectionThread implements Runnable{
 		try {
 			while(true){
 				Message msg = (Message) input.readObject();
-				queueManager.putMessage(connectionId, msg);
+				queueManager.message(connectionId, msg);
 			}				
 			
 		} catch (ClassNotFoundException | IOException e) {

@@ -3,7 +3,9 @@ package distribution;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import distribution.message.Header;
 import distribution.message.Message;
@@ -14,56 +16,108 @@ import infrastructure.ServerRequestHandler;
 public class QueueManager {
 
 	private List<String> topics;
-	private HashMap<String, List<Integer>> topicConnectionsMap;
+	private HashMap<String, List<Integer>> topicSubscribersMap;
+	
+	private ConcurrentLinkedQueue queue;
 	
 	private ServerRequestHandler serverHandler;
 	
+
 	public void main(String[] args){
+		
+		/*
+		 * Read messages from data? 
+		 */
 		
 		int port = 19999;
 	}
 	
 	public QueueManager(int port) throws IOException{
 		topics = new ArrayList<String>();		
-		topicConnectionsMap = new HashMap<String, List<Integer>>();		
+		topicSubscribersMap = new HashMap<String, List<Integer>>();		
 		
 		serverHandler = new ServerRequestHandler(port, this);
+		
+		queue = new ConcurrentLinkedQueue<>();
+		
+		MessagePassThread messagePassThread = new MessagePassThread(this);
+		new Thread(messagePassThread).start();
+		
 	}
 	
-	public synchronized void putMessage(int connectionId, Message msg) {
+	public QueueManager(int port, String queueLocation) throws IOException{
+		this(port);
+		
+		/*
+		 * READ QUEUE FROM DATA
+		 */
+	}
+	
+	
+	public synchronized void message(int connectionId, Message msg) {
 		
 		Header header = msg.getHeader();
-//		Payload payload = msg.getPayload();
 		Operation operation = header.getOperation();
 		
 		if(operation.equals(Operation.PUBLISH)){
-			publish(msg);
+			enqueue(msg);
 			
 		}else if(operation.equals(Operation.SUBSCRIBE)){
 			subscribe(connectionId, msg.getHeader().getTopic());
 		}
 		
-		System.out.println(connectionId + " " + msg);
 	}
 	
-	private void subscribe(int connectionId, String topic) {
+	private void enqueue(Message msg){
+		queue.add(msg);
+	}
+	
+	private void subscribe(int subscriber, String topic) {
 		
+		if(!topicSubscribersMap.containsKey(topic))
+			topicSubscribersMap.put(topic, new ArrayList<Integer>());
+			
+		topicSubscribersMap.get(topic).add(subscriber);		
 		
 	}
 
-	private void publish(Message msg) {
+	protected synchronized void publish(Message msg) {
 	
 		String topic = msg.getHeader().getTopic();
 		
-		List<Integer> connections = topicConnectionsMap.get(topic);
+		List<Integer> subs = topicSubscribersMap.get(topic);
 		
-		if(connections!=null){
-			for(Integer at : connections){
-				serverHandler.send(at, msg);
-				
+		/*
+		 * Delete subscribers that we lost connection
+		 */		
+		List<Integer> remove = new ArrayList<Integer>();
+		
+		if(subs!=null){
+			for(Integer at : subs){
+				try {
+					serverHandler.send(at, msg);
+					
+					remove.add(at);
+					
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}	
 			}
 		}
 		
+		removeSubscribers(remove, subs);
 	}
+	
+	private synchronized void removeSubscribers(List<Integer> remove, List<Integer> subs){
+		for(Integer at : remove){
+			subs.remove(at);
+		}
+	}
+
+	public ConcurrentLinkedQueue getQueue() {
+		return queue;
+	}
+	
 	
 }
