@@ -18,6 +18,9 @@ public class ClientRequestHandler {
 	private ObjectInputStream input;
 	
 	public ClientRequestHandler(String host, int port) throws UnknownHostException, IOException{
+		
+		System.out.println(host + " " + port);
+		
 		socket = new Socket(host, port);
 		
 		output = new ObjectOutputStream(socket.getOutputStream());
