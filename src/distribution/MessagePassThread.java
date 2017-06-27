@@ -1,7 +1,5 @@
 package distribution;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 import distribution.message.Message;
 
 public class MessagePassThread implements Runnable{
@@ -13,12 +11,11 @@ public class MessagePassThread implements Runnable{
 	}
 
 	@Override
-	public void run() {
-		
-		ConcurrentLinkedQueue<Message> queue = queueManager.getQueue(); 
+	public void run() {	
+//		ConcurrentLinkedQueue<Message> queue = queueManager.getQueue(); 
 		
 		while(true){
-			Message msg = queue.poll();
+			Message msg = queueManager.dequeue();
 			
 			if(msg == null){
 				
