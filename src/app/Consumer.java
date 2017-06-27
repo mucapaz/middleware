@@ -12,6 +12,8 @@ public class Consumer {
 		QueueManagerProxy queue1proxy = new QueueManagerProxy("topic1");
 		
 		while (true) {
+			
+			
 			System.out.println(queue1proxy.receive());
 		}
 		

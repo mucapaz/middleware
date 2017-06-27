@@ -3,14 +3,11 @@ package distribution;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import distribution.message.Header;
 import distribution.message.Message;
 import distribution.message.Operation;
-import distribution.message.Payload;
 import infrastructure.ServerRequestHandler;
 
 public class QueueManager {
@@ -20,14 +17,14 @@ public class QueueManager {
 	private List<String> topics;
 	private HashMap<String, List<Integer>> topicSubscribersMap;
 	
-	private ConcurrentLinkedQueue queue;
+	private Queue queue;
 	
 	private ServerRequestHandler serverHandler;
 	
-
+	
 	public static void main(String[] args) throws IOException{
 		
-		/*
+		/* 
 		 * Read messages from data? 
 		 */
 
@@ -39,18 +36,18 @@ public class QueueManager {
 	
 	public QueueManager() throws IOException{
 		
+		queue = new Queue();
+		
 		topics = new ArrayList<String>();		
 		
 		topicSubscribersMap = new HashMap<String, List<Integer>>();		
 		
 		serverHandler = new ServerRequestHandler(port, this);
 		
-		queue = new ConcurrentLinkedQueue<>();
-		
-		
+//		queue = new ConcurrentLinkedQueue<>();
 		
 	}
-	
+
 	public void run(){
 	
 		MessagePassThread messagePassThread = new MessagePassThread(this);
@@ -59,25 +56,13 @@ public class QueueManager {
 		
 		
 		while(true){
-			
-			
 			serverHandler.connect();
 			
-			System
-			
+			System.out.println("QueueManager -> serverHandler.connect()");	
 		}
 		
 //		thread.join();
 	}
-	
-	public QueueManager(int port, String queueLocation) throws IOException{
-	
-		
-		/*
-		 * READ QUEUE FROM DATA
-		 */
-	}
-	
 	
 	public synchronized void message(int connectionId, Message msg) {
 		
@@ -85,7 +70,7 @@ public class QueueManager {
 		Operation operation = header.getOperation();
 		
 		if(operation.equals(Operation.PUBLISH)){
-			enqueue(msg);
+			queue.enqueue(msg);
 			
 		}else if(operation.equals(Operation.SUBSCRIBE)){
 			subscribe(connectionId, msg.getHeader().getTopic());
@@ -94,7 +79,7 @@ public class QueueManager {
 	}
 	
 	private void enqueue(Message msg){
-		queue.add(msg);
+		queue.enqueue(msg);
 	}
 	
 	private void subscribe(int subscriber, String topic) {
@@ -103,7 +88,6 @@ public class QueueManager {
 			topicSubscribersMap.put(topic, new ArrayList<Integer>());
 			
 		topicSubscribersMap.get(topic).add(subscriber);		
-		
 	}
 
 	protected synchronized void publish(Message msg) {
@@ -140,9 +124,8 @@ public class QueueManager {
 		}
 	}
 
-	public ConcurrentLinkedQueue getQueue() {
-		return queue;
+	public Message dequeue() {	
+		return queue.dequeue();
 	}
-	
 	
 }

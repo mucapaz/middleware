@@ -15,6 +15,9 @@ public class Producer {
 		while(true){
 			Thread.sleep(500);
 			proxy1.send("topic1", "Bote fé", Operation.PUBLISH);
+			
+//			System.out.println("Producer -> proxy1.send(topic1, Bote fé, Operation.PUBLISH)");
+			
 		}
 		
 		

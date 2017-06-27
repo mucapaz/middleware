@@ -8,20 +8,25 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.LinkedList;
-import java.util.Queue;
+
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import distribution.message.Message;
 
-public class MessageRepository {
+public class Queue {
 	File file;
-	Queue<Message> queue;
 	
-	public MessageRepository(){
-		file = new File("data/queue.dat");
+	ConcurrentLinkedQueue<Message> queue;
+		
+	public Queue(){
+		file = new File("data/queue");
 		if (file.exists()){
 	        readQueue();
+	        
+	        System.out.println("Init queue. size = " +  queue.size());
+	        
 	    } else {
-	    	queue = new LinkedList<Message>();
+	    	queue = new ConcurrentLinkedQueue<Message>();
 	    	try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(file))) {
 	            os.writeObject(queue);
 	            os.close();
@@ -32,31 +37,31 @@ public class MessageRepository {
 	    }
 	}
 	
-	public void enqueue(Message message){
+	public synchronized void  enqueue(Message message){
 		queue.add(message);
 		saveQueue();
 	}
 	
 	public Message dequeue(){
 		Message message;
-		message = queue.remove();
+		message = queue.poll();
 		saveQueue();
 		return message;
 	}
-	
+		
 	/** returns the queue read from the queue without deleting it*/
-	public Queue<Message> getQueue(){
+	public synchronized ConcurrentLinkedQueue<Message> getQueue(){
 		readQueue();
 		return queue;
 	}
 	
 	/**reads queue from File*/
 	@SuppressWarnings("unchecked")
-	public void readQueue(){
+	public synchronized void readQueue(){
 			ObjectInputStream ois;
 			try {
 				ois = new ObjectInputStream(new FileInputStream(file));
-				this.queue = (Queue<Message>) ois.readObject();
+				this.queue = (ConcurrentLinkedQueue<Message>) ois.readObject();
 				ois.close();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -80,4 +85,8 @@ public class MessageRepository {
 			e.printStackTrace();
 		}
 	}
+
+	
+
+	
 }
