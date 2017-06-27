@@ -18,7 +18,7 @@ public class QueueManagerProxy {
 		this.queueName = queueName;
 		
 
-		crh = new ClientRequestHandler("127.0.0.1", 16999);
+		crh = new ClientRequestHandler("127.0.0.1", QueueManager.port);
 	}
 	
 	public synchronized void send(String topic, Object content, Operation operation){

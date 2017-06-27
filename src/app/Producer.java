@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 
 import distribution.QueueManagerProxy;
+import distribution.message.Operation;
 
 public class Producer {
 
@@ -13,9 +14,10 @@ public class Producer {
 		
 		while(true){
 			Thread.sleep(500);
-			
-			proxy1.send("topic1", content, operation);
+			proxy1.send("topic1", "Bote fé", Operation.PUBLISH);
 		}
+		
+		
 		
 	}
 	

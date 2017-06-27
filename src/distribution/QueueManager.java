@@ -15,6 +15,8 @@ import infrastructure.ServerRequestHandler;
 
 public class QueueManager {
 
+	public static int port;
+	
 	private List<String> topics;
 	private HashMap<String, List<Integer>> topicSubscribersMap;
 	
@@ -23,25 +25,50 @@ public class QueueManager {
 	private ServerRequestHandler serverHandler;
 	
 
-	public void main(String[] args){
+	public static void main(String[] args) throws IOException{
 		
 		/*
 		 * Read messages from data? 
 		 */
+
 		
-		int port = 19999;
+		QueueManager queue = new QueueManager(19999);
+		queue.run();
+		
 	}
 	
 	public QueueManager(int port) throws IOException{
+		
 		topics = new ArrayList<String>();		
+		
 		topicSubscribersMap = new HashMap<String, List<Integer>>();		
 		
 		serverHandler = new ServerRequestHandler(port, this);
 		
 		queue = new ConcurrentLinkedQueue<>();
 		
+		
+		
+	}
+	
+	public void run(){
+	
 		MessagePassThread messagePassThread = new MessagePassThread(this);
-		new Thread(messagePassThread).start();
+		Thread thread = new Thread(messagePassThread);
+		thread.start();
+		
+		try {
+			thread.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		while(true){
+			System.out.println(" oi ");
+			
+			serverHandler.connect();
+		}
 		
 	}
 	
