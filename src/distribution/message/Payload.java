@@ -11,26 +11,15 @@ public class Payload implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private List<Object> content;
+	private Object content;
+
 	
-	public Payload() {
-		this.setContent(new ArrayList<Object>());
-	}
-	
-	public Payload(List<Object> content) {
-		this.setContent((ArrayList<Object>) content);
-	}
-	
-	public void add(Object o) {
-		getContent().add(o);
+	public Payload(Object content) {
+		this.content = content;
 	}
 
-	public List<Object> getContent() {
+	public Object getContent() {
 		return content;
-	}
-
-	public void setContent(List<Object> content2) {
-		this.content = (ArrayList<Object>) content2;
 	}
 
 	@Override
