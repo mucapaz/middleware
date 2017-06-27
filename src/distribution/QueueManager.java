@@ -15,7 +15,7 @@ import infrastructure.ServerRequestHandler;
 
 public class QueueManager {
 
-	public static int port;
+	public static int port = 13505;
 	
 	private List<String> topics;
 	private HashMap<String, List<Integer>> topicSubscribersMap;
@@ -32,12 +32,12 @@ public class QueueManager {
 		 */
 
 		
-		QueueManager queue = new QueueManager(19999);
+		QueueManager queue = new QueueManager();
 		queue.run();
 		
 	}
 	
-	public QueueManager(int port) throws IOException{
+	public QueueManager() throws IOException{
 		
 		topics = new ArrayList<String>();		
 		
@@ -57,23 +57,21 @@ public class QueueManager {
 		Thread thread = new Thread(messagePassThread);
 		thread.start();
 		
-		try {
-			thread.join();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		
 		while(true){
-			System.out.println(" oi ");
+			
 			
 			serverHandler.connect();
+			
+			System
+			
 		}
 		
+//		thread.join();
 	}
 	
 	public QueueManager(int port, String queueLocation) throws IOException{
-		this(port);
+	
 		
 		/*
 		 * READ QUEUE FROM DATA

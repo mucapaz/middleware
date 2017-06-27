@@ -17,8 +17,9 @@ public class QueueManagerProxy {
 	public QueueManagerProxy(String queueName) throws UnknownHostException, IOException{
 		this.queueName = queueName;
 		
-
-		crh = new ClientRequestHandler("127.0.0.1", QueueManager.port);
+		
+	
+		crh = new ClientRequestHandler("localhost", QueueManager.port);
 	}
 	
 	public synchronized void send(String topic, Object content, Operation operation){
