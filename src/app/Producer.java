@@ -20,7 +20,7 @@ public class Producer {
 		while(true){
 			
 			//Fila 1
-			proxy1.send("topic1", "Conteúdo 1 " + rand.nextInt(10000), Operation.PUBLISH);
+			proxy1.send("topic1", "Tópico 1, Fila 1" + rand.nextInt(10000), Operation.PUBLISH);
 			
 			proxy1.send("topic2", "Tópico 2, Fila 1" + rand.nextInt(10000), Operation.PUBLISH);
 			proxy1.send("topic3", "Tópico 3, Fila 1" + rand.nextInt(10000), Operation.PUBLISH);
@@ -35,7 +35,7 @@ public class Producer {
 			
 			System.out.println("Producer sent");
 			
-			Thread.sleep(5000);	
+//			Thread.sleep(5000);	
 		}
 		
 	}

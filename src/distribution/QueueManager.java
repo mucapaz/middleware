@@ -92,6 +92,16 @@ public class QueueManager {
 
 	protected synchronized void publish(Message msg) {
 	
+		/*
+		 * Teste de persistência
+		 */
+		try {
+			Thread.sleep(10000);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
 		String topic = msg.getHeader().getTopic();
 		
 		List<Integer> subs = topicSubscribersMap.get(topic);

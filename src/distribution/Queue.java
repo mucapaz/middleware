@@ -18,40 +18,43 @@ public class Queue {
 	File file;
 	
 	ConcurrentLinkedQueue<Message> queue;
-		
+	
+	boolean persist = true; 
+	
 	public Queue(){
 		queue = new ConcurrentLinkedQueue();
 		
-//		file = new File("data/queue");
-//		if (file.exists()){
-//	        readQueue();
-//	        
-//	        System.out.println("Init queue. size = " +  queue.size());
-//	        
-//	    } else {
-//	    	queue = new ConcurrentLinkedQueue<Message>();
-//	    	try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(file))) {
-//	            os.writeObject(queue);
-//	            os.close();
-//	        } catch (IOException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//	    }
-		
-		
-		
+		if(persist){
+			file = new File("data/queue");
+			if (file.exists()){
+		        readQueue();
+		        
+		        System.out.println("Init queue. size = " +  queue.size());
+		        
+		    } else {
+		    	queue = new ConcurrentLinkedQueue<Message>();
+		    	try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(file))) {
+		            os.writeObject(queue);
+		            os.close();
+		        } catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		    }
+		}
 	}
 	
 	public synchronized void  enqueue(Message message){
 		queue.add(message);
-//		saveQueue();
+		if(persist) 
+			saveQueue();
 	}
 	
 	public Message dequeue(){
 		Message message;
 		message = queue.poll();
-//		saveQueue();
+		if(persist)
+				saveQueue();
 		return message;
 	}
 		

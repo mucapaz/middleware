@@ -6,9 +6,18 @@ import java.net.UnknownHostException;
 import distribution.QueueManagerProxy;
 import distribution.message.Operation;
 
-public class Consumer {
+public class Consumer implements Runnable{
 
-	public static void main(String[] args) throws UnknownHostException, IOException {
+	private QueueManagerProxy proxy;
+	private String name;
+	
+	
+	public Consumer(String name, QueueManagerProxy proxy) {
+		this.proxy = proxy;
+		this.name = name;
+	}
+	
+	public static void main(String[] args) throws UnknownHostException, IOException, InterruptedException {
 		
 		QueueManagerProxy proxy1 = new QueueManagerProxy("queue1");
 		QueueManagerProxy proxy2 = new QueueManagerProxy("queue2");
@@ -24,15 +33,29 @@ public class Consumer {
 		
 		proxy1.send("topic1", "", Operation.SUBSCRIBE);
 		
+		Consumer c1 = new Consumer("Consumer 1", proxy1);
+		
+		Consumer c2 = new Consumer("Consumer 1", proxy1);
+		
+		
+		Thread t1 = new Thread(c1);
+		Thread t2 = new Thread(c2);
+		
+		
+		t1.start();
+		t2.start();
+		
+		t1.join();
+		t2.join();
+	
+	}
+
+	@Override
+	public void run() {
 		while (true) {
-			//Fila 1
-			System.out.println("Proxy1 -> "  + proxy1.receive());
-				
-			//Fila 2
-			System.out.println("Proxy2 -> " + proxy2.receive());
+			
+			System.out.println(name + " -> "  + proxy.receive());
 		}
-		
-		
 		
 	}
 
