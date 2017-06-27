@@ -21,7 +21,7 @@ public class QueueManagerProxy {
 		crh = new ClientRequestHandler("127.0.0.1", 16999);
 	}
 	
-	public void send(String topic, Object content, Operation operation){
+	public synchronized void send(String topic, Object content, Operation operation){
 		Message message = MessageCreator.createMessage(topic, content, operation);
 		
 		try {
@@ -33,5 +33,8 @@ public class QueueManagerProxy {
 				
 	}
 		
+	public Object receive(){
+		return crh.receive().getPayload().getContent();
+	}
 	
 }
