@@ -14,20 +14,25 @@ public class Consumer {
 		QueueManagerProxy proxy2 = new QueueManagerProxy("queue2");
 		
 		proxy1.send("topic1", "", Operation.SUBSCRIBE);
+		
 		proxy1.send("topic2", "", Operation.SUBSCRIBE);
 		
 		proxy2.send("topic11", "", Operation.SUBSCRIBE);
 		proxy2.send("topic22", "", Operation.SUBSCRIBE);
-		
+
 		proxy1.send("topic3", "", Operation.SUBSCRIBE);
+		
+		proxy1.send("topic1", "", Operation.SUBSCRIBE);
 		
 		while (true) {
 			//Fila 1
-			System.out.println(proxy1.receive());
-			
+			System.out.println("Proxy1 -> "  + proxy1.receive());
+				
 			//Fila 2
-			System.out.println(proxy2.receive());
+			System.out.println("Proxy2 -> " + proxy2.receive());
 		}
+		
+		
 		
 	}
 

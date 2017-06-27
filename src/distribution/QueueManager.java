@@ -115,7 +115,7 @@ public class QueueManager {
 			}
 		}
 		
-		removeSubscribers(remove, subs);
+//		removeSubscribers(remove, subs);
 	}
 	
 	private synchronized void removeSubscribers(List<Integer> remove, List<Integer> subs){

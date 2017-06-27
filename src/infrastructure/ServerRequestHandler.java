@@ -49,10 +49,13 @@ public class ServerRequestHandler {
 
 	public void send(int connectionId, Message msg) throws IOException{
 		ObjectOutputStream output = connectionMap.get(connectionId);
-
+		
 		try {
 			output.writeObject(msg);
 			output.flush();
+			
+//			System.out.println(" ServerRequestHandlermsg.getPayload().getContent());			
+			
 		} catch (IOException e) {
 			
 			connectionMap.remove(connectionId);
