@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -70,6 +71,16 @@ public class Queue {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+	}
+	
+	public String printQueue(){
+		readQueue();
+		Iterator it = queue.iterator();
+		String result = "";
+		while(it.hasNext()){
+			result += "\n" + ((Message)it.next()).toString();
+		}
+		return result;
 	}
 	
 	/**saves queue to File*/

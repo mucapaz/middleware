@@ -45,7 +45,7 @@ public class Message implements Serializable{
 
 	@Override
 	public String toString() {
-		return "Message [header=" + header + ", payload=" + payload + "]";
+		return "Message [header=" + header.toString() + ", payload=" + payload.toString() + "]";
 	}
 	
 }
