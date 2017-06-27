@@ -18,16 +18,12 @@ public class Producer {
 		Random rand = new Random();
 		
 		while(true){
-			Thread.sleep(500);
+			
 			//Fila 1
 			proxy1.send("topic1", "Conteúdo 1 " + rand.nextInt(10000), Operation.PUBLISH);
 			
-			
 			proxy1.send("topic2", "Tópico 2, Fila 1" + rand.nextInt(10000), Operation.PUBLISH);
 			proxy1.send("topic3", "Tópico 3, Fila 1" + rand.nextInt(10000), Operation.PUBLISH);
-			
-			
-			
 			
 			//Fila 2
 			proxy2.send("topic11", "Tópico 11, Fila 2" + rand.nextInt(10000), Operation.PUBLISH);
@@ -38,6 +34,8 @@ public class Producer {
 			
 			
 			System.out.println("Producer sent");
+			
+			Thread.sleep(5000);	
 		}
 		
 	}
