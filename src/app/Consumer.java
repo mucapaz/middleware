@@ -35,7 +35,7 @@ public class Consumer implements Runnable{
 		
 		Consumer c1 = new Consumer("Consumer 1", proxy1);
 		
-		Consumer c2 = new Consumer("Consumer 1", proxy1);
+		Consumer c2 = new Consumer("Consumer 2", proxy1);
 		
 		
 		Thread t1 = new Thread(c1);

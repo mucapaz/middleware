@@ -12,7 +12,6 @@ public class MessagePassThread implements Runnable{
 
 	@Override
 	public void run() {	
-//		ConcurrentLinkedQueue<Message> queue = queueManager.getQueue(); 
 		
 		while(true){
 			Message msg = queueManager.dequeue();
@@ -29,12 +28,12 @@ public class MessagePassThread implements Runnable{
 			}else{
 				queueManager.publish(msg);
 				
-				try {
-					Thread.sleep(300);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+//				try {
+//					Thread.sleep(300);
+//				} catch (InterruptedException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
 				
 			}	
 		}

@@ -17,24 +17,24 @@ public class ClientRequestHandler {
 	private ObjectOutputStream output;
 	private ObjectInputStream input;
 	
-	public ClientRequestHandler(String host, int port) throws UnknownHostException, IOException{
-		
-		System.out.println(host + " " + port);
-		
+	public ClientRequestHandler(String host, int port) throws UnknownHostException, IOException{	
 		socket = new Socket(host, port);
 		
 		output = new ObjectOutputStream(socket.getOutputStream());
 		input = new ObjectInputStream(socket.getInputStream());
 	}
 	
-	public void send(Message message) throws IOException{
+	public synchronized void send(Message message) throws IOException{
 		output.writeObject(message);	
 	}
 	
-	public Message receive(){
+	public synchronized Message receive(){
 		Message msg = null;
 		
 		try {
+			
+			Object obj = input.readObject();
+			
 			msg = (Message) input.readObject();
 			
 		} catch (ClassNotFoundException | IOException e) {

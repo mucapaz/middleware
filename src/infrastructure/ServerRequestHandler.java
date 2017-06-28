@@ -47,7 +47,7 @@ public class ServerRequestHandler {
 		}
 	}
 
-	public void send(int connectionId, Message msg) throws IOException{
+	public synchronized void send(int connectionId, Message msg) throws IOException{
 		ObjectOutputStream output = connectionMap.get(connectionId);
 		
 		try {

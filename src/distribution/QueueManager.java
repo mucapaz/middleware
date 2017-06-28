@@ -90,25 +90,23 @@ public class QueueManager {
 		topicSubscribersMap.get(topic).add(subscriber);		
 	}
 
-	protected synchronized void publish(Message msg) {
+	protected void publish(Message msg) {
 	
 		/*
 		 * Teste de persistência
 		 */
-		try {
-			Thread.sleep(10000);
-		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+//		try {
+//			Thread.sleep(10000);
+//		} catch (InterruptedException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
 		
 		String topic = msg.getHeader().getTopic();
 		
 		List<Integer> subs = topicSubscribersMap.get(topic);
 		
-		/*
-		 * Delete subscribers that we lost connection
-		 */		
+			
 		List<Integer> remove = new ArrayList<Integer>();
 		
 		if(subs!=null){
