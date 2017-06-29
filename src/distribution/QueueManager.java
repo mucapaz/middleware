@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import configuration.Config;
 import distribution.message.Header;
 import distribution.message.Message;
 import distribution.message.Operation;
@@ -12,7 +13,7 @@ import infrastructure.ServerRequestHandler;
 
 public class QueueManager {
 
-	public static int port = 13505;
+	public static int port = Config.queueManagerPort;
 	
 	private List<String> topics;
 	private HashMap<String, List<Integer>> topicSubscribersMap;

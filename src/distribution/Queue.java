@@ -12,6 +12,7 @@ import java.util.LinkedList;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import configuration.Config;
 import distribution.message.Message;
 
 public class Queue {
@@ -19,7 +20,7 @@ public class Queue {
 	
 	ConcurrentLinkedQueue<Message> queue;
 	
-	boolean persist = true; 
+	boolean persist = Config.persist; 
 	
 	public Queue(){
 		queue = new ConcurrentLinkedQueue();

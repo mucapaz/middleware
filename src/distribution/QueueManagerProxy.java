@@ -3,6 +3,7 @@ package distribution;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
+import configuration.Config;
 import distribution.message.Message;
 import distribution.message.MessageCreator;
 import distribution.message.Operation;
@@ -16,15 +17,11 @@ public class QueueManagerProxy {
 	
 	public QueueManagerProxy(String queueName) throws UnknownHostException, IOException{
 		this.queueName = queueName;
-		
-		
-	
-		crh = new ClientRequestHandler("localhost", QueueManager.port);
+		crh = new ClientRequestHandler(Config.queueManagerAddress, QueueManager.port);
 	}
 	
 	public synchronized void send(String topic, Object content, Operation operation){
 		Message message = MessageCreator.createMessage(topic, content, operation);
-		
 		try {
 			crh.send(message);
 		} catch (IOException e) {

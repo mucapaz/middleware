@@ -17,7 +17,7 @@ public class ConnectionThread implements Runnable{
 	public ConnectionThread(int connectionId ,Socket socket, QueueManager queueManager) throws IOException {
 		this.socket = socket;
 		this.connectionId = connectionId;
-		this.input = new ObjectInputStream(socket.getInputStream());
+		this.input = new ObjectInputStream(this.socket.getInputStream());
 		this.queueManager = queueManager;
 	}
 
