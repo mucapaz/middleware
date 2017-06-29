@@ -23,7 +23,6 @@ public class Consumer3 implements Runnable{
 		QueueManagerProxy proxy1 = new QueueManagerProxy();	
 		QueueManagerProxy proxy2 = new QueueManagerProxy();
 	
-		
 		proxy1.send("topic1", "", Operation.SUBSCRIBE);
 		
 		proxy1.send("topic2", "", Operation.SUBSCRIBE);
@@ -35,9 +34,9 @@ public class Consumer3 implements Runnable{
 		
 		proxy1.send("topic1", "", Operation.SUBSCRIBE);
 		
-		Consumer c1 = new Consumer("Consumer 1", proxy1);
+		Consumer3 c1 = new Consumer3("Consumer 1", proxy1);
 		
-		Consumer c2 = new Consumer("Consumer 2", proxy1);
+		Consumer3 c2 = new Consumer3("Consumer 2", proxy2);
 		
 		
 		Thread t1 = new Thread(c1);

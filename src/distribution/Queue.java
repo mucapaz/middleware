@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import configuration.Config;
 import distribution.message.Message;
@@ -21,6 +22,8 @@ public class Queue {
 	ConcurrentLinkedQueue<Message> queue;
 	
 	boolean persist = Config.persist; 
+	
+	public static AtomicBoolean stop = new AtomicBoolean(false);
 	
 	public Queue(){
 		queue = new ConcurrentLinkedQueue();
@@ -36,6 +39,7 @@ public class Queue {
 		    	queue = new ConcurrentLinkedQueue<Message>();
 		    	try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(file))) {
 		            os.writeObject(queue);
+		            
 		            os.close();
 		        } catch (IOException e) {
 					// TODO Auto-generated catch block
@@ -45,7 +49,7 @@ public class Queue {
 		}
 	}
 	
-	public synchronized void  enqueue(Message message){
+	public void  enqueue(Message message){
 		queue.add(message);
 		if(persist) 
 			saveQueue();
@@ -60,7 +64,7 @@ public class Queue {
 	}
 		
 	/** returns the queue read from the queue without deleting it*/
-	public synchronized ConcurrentLinkedQueue<Message> getQueue(){
+	public ConcurrentLinkedQueue<Message> getQueue(){
 		readQueue();
 		return queue;
 	}
@@ -73,13 +77,13 @@ public class Queue {
 				ois = new ObjectInputStream(new FileInputStream(file));
 				this.queue = (ConcurrentLinkedQueue<Message>) ois.readObject();
 				ois.close();
-			} catch (IOException e) {
+			} catch (Exception e) {
+				
+//				this.queue = new ConcurrentLinkedQueue
+				
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			} 
 	}
 	
 
@@ -94,17 +98,41 @@ public class Queue {
 	}
 	
 	/**saves queue to File*/
-	public void saveQueue(){
-		try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(file))) {
-	        os.writeObject(queue);
-	        os.close();
-	    } catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	public synchronized void saveQueue(){
+		
+		if(!stop.get()){
+		
+			System.out.println("PUTA QUE ME PARIU " + stop + " ");
+				
+			ObjectOutputStream os = null;
+			try {
+				
+				os = new ObjectOutputStream(new FileOutputStream(file));
+		        os.writeObject(queue);
+		       
+		        os.flush();
+		        os.close();
+		        
+		    } catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 		}
+		
+		
+		
+	}
+
+	public boolean isEmpty() {
+		return queue.size() == 0;
+	}
+
+	public void stop() {
+		stop.set(true);
 	}
 
 

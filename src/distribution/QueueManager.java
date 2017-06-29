@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Scanner;
 
 import configuration.Config;
 import distribution.message.Header;
@@ -12,7 +13,7 @@ import distribution.message.MessageCreator;
 import distribution.message.Operation;
 import infrastructure.ServerRequestHandler;
 
-public class QueueManager {
+public class QueueManager implements Runnable{
 
 	public static int port = Config.queueManagerPort;
 	
@@ -25,17 +26,48 @@ public class QueueManager {
 	private ServerRequestHandler serverHandler;
 	
 	
-	public static void main(String[] args) throws IOException{
+	public static void main(String[] args) throws IOException, InterruptedException{
 		
 		/* 
 		 * Read messages from data? 
 		 */
 		
 		QueueManager queue = new QueueManager();
-		queue.run();
+		Thread t = new Thread(queue);
+		t.start();
+		
+			
+		Scanner in = new Scanner(System.in);
+		
+		while(in.hasNextLine()){
+			String str = in.nextLine();
+			
+			
+			if(str.equals("exit")){
+				queue.stop();
+				
+				Thread.sleep(5000);
+				
+				System.exit(0);
+				
+				
+				
+			}		
+		}
+	
 		
 	}
 	
+	
+
+	private void stop() {
+		// TODO Auto-generated method stub
+		queue.stop();
+		
+	}
+
+
+
 	public QueueManager() throws IOException{	
 		queue = new Queue();
 		
@@ -43,16 +75,19 @@ public class QueueManager {
 		
 		serverHandler = new ServerRequestHandler(port, this);
 		
-//		queue = new ConcurrentLinkedQueue<>();
-		
 	}
 
 	public void run(){
-	
-		MessagePassThread messagePassThread = new MessagePassThread(this);
+		MessagePassThread messagePassThread;
+		System.out.println(this.queue.isEmpty());
+		if(!this.queue.isEmpty()){
+			messagePassThread = new MessagePassThread(this, true);
+		}else{
+			messagePassThread = new MessagePassThread(this, false);
+		}
+		
 		Thread thread = new Thread(messagePassThread);
 		thread.start();
-		
 		
 		while(true){
 			serverHandler.connect();
@@ -67,10 +102,7 @@ public class QueueManager {
 		
 		Header header = msg.getHeader();
 		Operation operation = header.getOperation();
-		
-		
-		System.out.println(operation);
-		
+			
 		if(operation.equals(Operation.PUBLISH)){
 			queue.enqueue(msg);
 			
@@ -112,12 +144,13 @@ public class QueueManager {
 		/*
 		 * Teste de persistência
 		 */
-//		try {
-//			Thread.sleep(1000);
-//		} catch (InterruptedException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		}
+		if(Config.persistanceTest)
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		
 		String topic = msg.getHeader().getTopic();
 		

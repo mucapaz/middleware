@@ -37,6 +37,7 @@ public class Consumer implements Runnable{
 	public void run() {
 		while (true) {
 			
+			
 			Message msg = proxy.receive();
 			
 			if(msg.getHeader().getOperation() == Operation.LIST){
@@ -61,7 +62,7 @@ public class Consumer implements Runnable{
 					proxy.subscribe(string);
 				}
 			}else{
-				System.out.println(name + " -> "  + proxy.receive().getPayload().getContent());
+				System.out.println(name + " -> "  + msg.getPayload().getContent());
 			}				
 		}
 	}
