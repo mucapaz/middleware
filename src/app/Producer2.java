@@ -10,7 +10,7 @@ public class Producer2 {
 	
 	public static void main(String[] args) throws UnknownHostException, IOException, InterruptedException {
 		
-		QueueManagerProxy proxy1 = new QueueManagerProxy("queue1");
+		QueueManagerProxy proxy1 = new QueueManagerProxy();
 		
 		int n = 0;
 		

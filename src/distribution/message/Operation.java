@@ -1,5 +1,5 @@
 package distribution.message;
 
 public enum Operation {
-	PUBLISH, SUBSCRIBE
+	PUBLISH, SUBSCRIBE, LIST
 }

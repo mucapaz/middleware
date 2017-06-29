@@ -10,10 +10,12 @@ public class Consumer2 {
 
 	public static void main(String[] args) throws UnknownHostException, IOException {
 
-		QueueManagerProxy proxy1 = new QueueManagerProxy("queue1");
+		QueueManagerProxy proxy1 = new QueueManagerProxy();
+		
+		proxy1.send("topic1", "", Operation.SUBSCRIBE);
 		
 		while (true) {
-			proxy1.send("topic1", "", Operation.SUBSCRIBE);
+			
 			System.out.println(proxy1.receive());
 		}
 	}

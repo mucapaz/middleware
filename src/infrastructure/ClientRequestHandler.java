@@ -28,13 +28,10 @@ public class ClientRequestHandler {
 		output.writeObject(message);	
 	}
 	
-	public synchronized Message receive(){
+	public Message receive(){
 		Message msg = null;
 		
 		try {
-			
-			Object obj = input.readObject();
-			
 			msg = (Message) input.readObject();
 			
 		} catch (ClassNotFoundException | IOException e) {

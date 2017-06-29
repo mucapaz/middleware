@@ -4,56 +4,90 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Scanner;
 
+import configuration.Config;
 import distribution.message.Header;
 import distribution.message.Message;
+import distribution.message.MessageCreator;
 import distribution.message.Operation;
 import infrastructure.ServerRequestHandler;
 
-public class QueueManager {
+public class QueueManager implements Runnable{
 
-	public static int port = 13505;
+	public static int port = Config.queueManagerPort;
 	
-	private List<String> topics;
 	private HashMap<String, List<Integer>> topicSubscribersMap;
+	
+	int count = 0;
 	
 	private Queue queue;
 	
 	private ServerRequestHandler serverHandler;
 	
 	
-	public static void main(String[] args) throws IOException{
+	public static void main(String[] args) throws IOException, InterruptedException{
 		
 		/* 
 		 * Read messages from data? 
 		 */
-
 		
 		QueueManager queue = new QueueManager();
-		queue.run();
+		Thread t = new Thread(queue);
+		t.start();
+		
+			
+		Scanner in = new Scanner(System.in);
+		
+		while(in.hasNextLine()){
+			String str = in.nextLine();
+			
+			
+			if(str.equals("exit")){
+				queue.stop();
+				
+				Thread.sleep(5000);
+				
+				System.exit(0);
+				
+				
+				
+			}		
+		}
+	
 		
 	}
 	
-	public QueueManager() throws IOException{
+	
+
+	private void stop() {
+		// TODO Auto-generated method stub
+		queue.stop();
 		
+	}
+
+
+
+	public QueueManager() throws IOException{	
 		queue = new Queue();
-		
-		topics = new ArrayList<String>();		
 		
 		topicSubscribersMap = new HashMap<String, List<Integer>>();		
 		
 		serverHandler = new ServerRequestHandler(port, this);
 		
-//		queue = new ConcurrentLinkedQueue<>();
-		
 	}
 
 	public void run(){
-	
-		MessagePassThread messagePassThread = new MessagePassThread(this);
+		MessagePassThread messagePassThread;
+		System.out.println(this.queue.isEmpty());
+		if(!this.queue.isEmpty()){
+			messagePassThread = new MessagePassThread(this, true);
+		}else{
+			messagePassThread = new MessagePassThread(this, false);
+		}
+		
 		Thread thread = new Thread(messagePassThread);
 		thread.start();
-		
 		
 		while(true){
 			serverHandler.connect();
@@ -68,19 +102,34 @@ public class QueueManager {
 		
 		Header header = msg.getHeader();
 		Operation operation = header.getOperation();
-		
+			
 		if(operation.equals(Operation.PUBLISH)){
 			queue.enqueue(msg);
 			
+			String topic = msg.getHeader().getTopic();
+			
+			if(!topicSubscribersMap.containsKey(topic)){
+				topicSubscribersMap.put(topic, new ArrayList<Integer>());
+			}
+			
 		}else if(operation.equals(Operation.SUBSCRIBE)){
-			subscribe(connectionId, msg.getHeader().getTopic());
+			subscribe(connectionId, msg.getHeader().getTopic());	
+			
+		}else if (operation.equals(Operation.LIST)){
+			try {
+				Message message  = MessageCreator.createMessage("",  topicSubscribersMap.keySet().toArray() ,Operation.LIST); 
+							
+				serverHandler.send(connectionId, message);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
-		
 	}
 	
-	private void enqueue(Message msg){
-		queue.enqueue(msg);
-	}
+//	private void enqueue(Message msg){
+//		queue.enqueue(msg);
+//	}
 	
 	private void subscribe(int subscriber, String topic) {
 		
@@ -95,12 +144,13 @@ public class QueueManager {
 		/*
 		 * Teste de persistência
 		 */
-//		try {
-//			Thread.sleep(10000);
-//		} catch (InterruptedException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		}
+		if(Config.persistanceTest)
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		
 		String topic = msg.getHeader().getTopic();
 		

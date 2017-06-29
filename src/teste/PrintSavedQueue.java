@@ -18,12 +18,11 @@ public class PrintSavedQueue {
 		System.out.println(mr.printQueue());
 	}
 	
-	static Message dummyMsg(String message){
-		Header header = new Header("nottopic",Operation.PUBLISH);
+	static Message dummyMsg(String message){		 
+		Header header = new Header("nottopic",Operation.PUBLISH, message.getClass());
 		Payload payload = new Payload(message);
 		Message teste = new Message(header,payload);
 		return teste;
 	}
-	
 	
 }
