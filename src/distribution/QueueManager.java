@@ -8,6 +8,7 @@ import java.util.List;
 import configuration.Config;
 import distribution.message.Header;
 import distribution.message.Message;
+import distribution.message.MessageCreator;
 import distribution.message.Operation;
 import infrastructure.ServerRequestHandler;
 
@@ -15,8 +16,9 @@ public class QueueManager {
 
 	public static int port = Config.queueManagerPort;
 	
-	private List<String> topics;
 	private HashMap<String, List<Integer>> topicSubscribersMap;
+	
+	int count = 0;
 	
 	private Queue queue;
 	
@@ -28,18 +30,14 @@ public class QueueManager {
 		/* 
 		 * Read messages from data? 
 		 */
-
 		
 		QueueManager queue = new QueueManager();
 		queue.run();
 		
 	}
 	
-	public QueueManager() throws IOException{
-		
+	public QueueManager() throws IOException{	
 		queue = new Queue();
-		
-		topics = new ArrayList<String>();		
 		
 		topicSubscribersMap = new HashMap<String, List<Integer>>();		
 		
@@ -70,18 +68,36 @@ public class QueueManager {
 		Header header = msg.getHeader();
 		Operation operation = header.getOperation();
 		
+		
+		System.out.println(operation);
+		
 		if(operation.equals(Operation.PUBLISH)){
 			queue.enqueue(msg);
 			
+			String topic = msg.getHeader().getTopic();
+			
+			if(!topicSubscribersMap.containsKey(topic)){
+				topicSubscribersMap.put(topic, new ArrayList<Integer>());
+			}
+			
 		}else if(operation.equals(Operation.SUBSCRIBE)){
-			subscribe(connectionId, msg.getHeader().getTopic());
+			subscribe(connectionId, msg.getHeader().getTopic());	
+			
+		}else if (operation.equals(Operation.LIST)){
+			try {
+				Message message  = MessageCreator.createMessage("",  topicSubscribersMap.keySet().toArray() ,Operation.LIST); 
+							
+				serverHandler.send(connectionId, message);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
-		
 	}
 	
-	private void enqueue(Message msg){
-		queue.enqueue(msg);
-	}
+//	private void enqueue(Message msg){
+//		queue.enqueue(msg);
+//	}
 	
 	private void subscribe(int subscriber, String topic) {
 		
@@ -97,7 +113,7 @@ public class QueueManager {
 		 * Teste de persistência
 		 */
 //		try {
-//			Thread.sleep(10000);
+//			Thread.sleep(1000);
 //		} catch (InterruptedException e1) {
 //			// TODO Auto-generated catch block
 //			e1.printStackTrace();

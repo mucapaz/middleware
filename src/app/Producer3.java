@@ -7,7 +7,7 @@ import java.util.Random;
 import distribution.QueueManagerProxy;
 import distribution.message.Operation;
 
-public class Producer {
+public class Producer3 {
 
 	public static void main(String[] args) throws UnknownHostException, IOException, InterruptedException{
 		
@@ -35,7 +35,7 @@ public class Producer {
 			
 			System.out.println("Producer sent");
 			
-//			Thread.sleep(5000);	
+			Thread.sleep(5000);	
 		}
 		
 	}
