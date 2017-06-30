@@ -27,7 +27,6 @@ public class MessagePassThread implements Runnable{
 		}	
 		
 		
-		
 		while(true){
 			Message msg = queueManager.dequeue();
 			

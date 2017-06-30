@@ -19,7 +19,7 @@ public class PrintSavedQueue {
 	}
 	
 	static Message dummyMsg(String message){		 
-		Header header = new Header("nottopic",Operation.PUBLISH, message.getClass());
+		Header header = new Header("test",Operation.PUBLISH, message.getClass());
 		Payload payload = new Payload(message);
 		Message teste = new Message(header,payload);
 		return teste;

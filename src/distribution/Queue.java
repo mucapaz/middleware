@@ -26,20 +26,16 @@ public class Queue {
 	public static AtomicBoolean stop = new AtomicBoolean(false);
 	
 	public Queue(){
-		queue = new ConcurrentLinkedQueue();
-		
 		if(persist){
 			file = new File("data/queue");
 			if (file.exists()){
 		        readQueue();
-		        
 		        System.out.println("Init queue. size = " +  queue.size());
 		        
 		    } else {
 		    	queue = new ConcurrentLinkedQueue<Message>();
 		    	try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(file))) {
 		            os.writeObject(queue);
-		            
 		            os.close();
 		        } catch (IOException e) {
 					// TODO Auto-generated catch block
@@ -58,14 +54,14 @@ public class Queue {
 	public Message dequeue(){
 		Message message;
 		message = queue.poll();
-		if(persist)
+		if(persist && message != null) //se a queue não estiver vazia, atualiza no disco
 				saveQueue();
 		return message;
 	}
 		
 	/** returns the queue read from the queue without deleting it*/
 	public ConcurrentLinkedQueue<Message> getQueue(){
-		readQueue();
+		//readQueue();
 		return queue;
 	}
 	
@@ -78,10 +74,6 @@ public class Queue {
 				this.queue = (ConcurrentLinkedQueue<Message>) ois.readObject();
 				ois.close();
 			} catch (Exception e) {
-				
-//				this.queue = new ConcurrentLinkedQueue
-				
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} 
 	}
@@ -89,7 +81,7 @@ public class Queue {
 
 	public String printQueue(){
 		readQueue();
-		Iterator it = queue.iterator();
+		Iterator<Message> it = queue.iterator();
 		String result = "";
 		while(it.hasNext()){
 			result += "\n" + ((Message)it.next()).toString();
@@ -101,8 +93,6 @@ public class Queue {
 	public synchronized void saveQueue(){
 		
 		if(!stop.get()){
-		
-			System.out.println("PUTA QUE ME PARIU " + stop + " ");
 				
 			ObjectOutputStream os = null;
 			try {
@@ -114,17 +104,13 @@ public class Queue {
 		        os.close();
 		        
 		    } catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
 		}
-		
-		
-		
+
 	}
 
 	public boolean isEmpty() {
@@ -135,8 +121,4 @@ public class Queue {
 		stop.set(true);
 	}
 
-
-	
-
-	
 }

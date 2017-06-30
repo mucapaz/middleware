@@ -46,7 +46,7 @@ public class Consumer implements Runnable{
 				
 				String[] topicos = new String[objs.length];
 				
-				System.out.println("Tópicos" + topicos.length);
+				System.out.println("Número de tópicos: " + topicos.length);
 				
 				for(int x=0;x<objs.length;x++){
 					

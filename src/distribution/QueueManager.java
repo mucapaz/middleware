@@ -3,6 +3,7 @@ package distribution;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 
@@ -28,40 +29,27 @@ public class QueueManager implements Runnable{
 	
 	public static void main(String[] args) throws IOException, InterruptedException{
 		
-		/* 
-		 * Read messages from data? 
-		 */
-		
 		QueueManager queue = new QueueManager();
 		Thread t = new Thread(queue);
 		t.start();
 		
-			
 		Scanner in = new Scanner(System.in);
 		
 		while(in.hasNextLine()){
 			String str = in.nextLine();
 			
-			
 			if(str.equals("exit")){
 				queue.stop();
-				
 				Thread.sleep(5000);
-				
 				System.exit(0);
-				
-				
 				
 			}		
 		}
-	
-		
 	}
 	
 	
 
 	private void stop() {
-		// TODO Auto-generated method stub
 		queue.stop();
 		
 	}
@@ -69,22 +57,29 @@ public class QueueManager implements Runnable{
 
 
 	public QueueManager() throws IOException{	
+		
 		queue = new Queue();
 		
-		topicSubscribersMap = new HashMap<String, List<Integer>>();		
+		topicSubscribersMap = new HashMap<String, List<Integer>>();
 		
-		serverHandler = new ServerRequestHandler(port, this);
+		restoreQueueTopics();
 		
+		serverHandler = new ServerRequestHandler(port, this);	
+		
+	}
+	
+	public void restoreQueueTopics(){
+		//Cadastra os tópicos presentes na fila do disco 
+		Iterator<Message> it = queue.getQueue().iterator();
+		while(it.hasNext()){
+			topicSubscribersMap.put(it.next().getHeader().getTopic(), new ArrayList<Integer>());
+		}
 	}
 
 	public void run(){
 		MessagePassThread messagePassThread;
-		System.out.println(this.queue.isEmpty());
-		if(!this.queue.isEmpty()){
-			messagePassThread = new MessagePassThread(this, true);
-		}else{
-			messagePassThread = new MessagePassThread(this, false);
-		}
+		
+		messagePassThread = new MessagePassThread(this,!this.queue.isEmpty());
 		
 		Thread thread = new Thread(messagePassThread);
 		thread.start();
@@ -94,8 +89,6 @@ public class QueueManager implements Runnable{
 			
 			System.out.println("QueueManager -> serverHandler.connect()");	
 		}
-		
-//		thread.join();
 	}
 	
 	public synchronized void message(int connectionId, Message msg) {
@@ -121,15 +114,10 @@ public class QueueManager implements Runnable{
 							
 				serverHandler.send(connectionId, message);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 	}
-	
-//	private void enqueue(Message msg){
-//		queue.enqueue(msg);
-//	}
 	
 	private void subscribe(int subscriber, String topic) {
 		
@@ -140,15 +128,11 @@ public class QueueManager implements Runnable{
 	}
 
 	protected void publish(Message msg) {
-	
-		/*
-		 * Teste de persistência
-		 */
+		
 		if(Config.persistanceTest)
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		
@@ -167,13 +151,10 @@ public class QueueManager implements Runnable{
 					remove.add(at);
 					
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}	
 			}
 		}
-		
-//		removeSubscribers(remove, subs);
 	}
 	
 	private synchronized void removeSubscribers(List<Integer> remove, List<Integer> subs){
