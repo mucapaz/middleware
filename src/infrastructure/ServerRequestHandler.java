@@ -55,7 +55,6 @@ public class ServerRequestHandler {
 		try {
 			output.writeObject(msg);
 			output.flush();
-					
 			
 		} catch (IOException e) {
 			

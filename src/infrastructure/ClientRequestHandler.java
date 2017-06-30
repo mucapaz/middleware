@@ -30,13 +30,12 @@ public class ClientRequestHandler {
 	
 	public Message receive(){
 		Message msg = null;
-		
 		try {
 			msg = (Message) input.readObject();
-			
-		} catch (ClassNotFoundException | IOException e) {
+		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
-					
+			e.printStackTrace();
+		} catch ( IOException e){
 			e.printStackTrace();
 		}
 		return msg;	

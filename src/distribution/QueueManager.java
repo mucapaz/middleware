@@ -1,6 +1,9 @@
 package distribution;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -39,23 +42,12 @@ public class QueueManager implements Runnable{
 			String str = in.nextLine();
 			
 			if(str.equals("exit")){
-				queue.stop();
-				Thread.sleep(5000);
 				System.exit(0);
-				
 			}		
 		}
-	}
-	
-	
-
-	private void stop() {
-		queue.stop();
 		
 	}
-
-
-
+	
 	public QueueManager() throws IOException{	
 		
 		queue = new Queue();
@@ -64,7 +56,7 @@ public class QueueManager implements Runnable{
 		
 		restoreQueueTopics();
 		
-		serverHandler = new ServerRequestHandler(port, this);	
+		serverHandler = new ServerRequestHandler(port, this);
 		
 	}
 	

@@ -30,7 +30,6 @@ public class Queue {
 			file = new File("data/queue");
 			if (file.exists()){
 		        readQueue();
-		        System.out.println("Init queue. size = " +  queue.size());
 		        
 		    } else {
 		    	queue = new ConcurrentLinkedQueue<Message>();
@@ -42,6 +41,25 @@ public class Queue {
 					e.printStackTrace();
 				}
 		    }
+			
+			System.out.println("Init queue. size = " +  queue.size());
+			
+			Runtime.getRuntime().addShutdownHook(new Thread(){
+				public void run(){
+					System.out.println("Running shutdown Hook at Queue.java");
+					stop.set(true);
+					try {
+						ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(file));
+				        os.writeObject(queue);				       
+				        os.flush();
+				        os.close();
+				    } catch (FileNotFoundException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			});
 		}
 	}
 	
@@ -54,7 +72,7 @@ public class Queue {
 	public Message dequeue(){
 		Message message;
 		message = queue.poll();
-		if(persist && message != null) //se a queue não estiver vazia, atualiza no disco
+		if(persist && message != null) //se a queue não estiver vazia, atualiza o novo estado no disco
 				saveQueue();
 		return message;
 	}
@@ -116,9 +134,4 @@ public class Queue {
 	public boolean isEmpty() {
 		return queue.size() == 0;
 	}
-
-	public void stop() {
-		stop.set(true);
-	}
-
 }
