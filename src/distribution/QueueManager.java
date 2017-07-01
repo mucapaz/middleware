@@ -139,6 +139,7 @@ public class QueueManager implements Runnable{
 		if(subs!=null){
 			for(Iterator<Integer> i = subs.iterator(); i.hasNext();){
 				int sub = i.next();
+				System.out.println(sub);
 				try {
 					serverHandler.send(sub, msg);
 				} catch (IOException e) {

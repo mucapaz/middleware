@@ -9,6 +9,8 @@ import java.util.Map;
 
 import distribution.QueueManager;
 import distribution.message.Message;
+import repositories.ConnectionIdRepository;
+import repositories.TopicSubscriberMapRepository;
 
 public class ServerRequestHandler {
 
@@ -18,7 +20,7 @@ public class ServerRequestHandler {
 	private ServerSocket socket;
 
 	private Map<Integer, ObjectOutputStream> connectionMap;
-	private int connectionCounter = 0;
+	private int connectionCounter = ConnectionIdRepository.readFromDisk();
 
 	public ServerRequestHandler(int port, QueueManager queueManager) throws IOException{
 		this.port = port;
@@ -26,6 +28,13 @@ public class ServerRequestHandler {
 		this.queueManager = queueManager;
 
 		this.connectionMap = new HashMap<Integer, ObjectOutputStream>();
+		
+		Runtime.getRuntime().addShutdownHook(new Thread(){
+			public void run(){
+				System.out.println("Running shutdown Hook at ServerRequestHandler.java");
+				ConnectionIdRepository.saveToDisk(connectionCounter);
+			}
+		});
 	}
 
 	public void connect(){
