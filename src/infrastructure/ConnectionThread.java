@@ -23,6 +23,7 @@ public class ConnectionThread implements Runnable{
 
 	@Override
 	public void run() {
+		firstMessageRoutine();
 		try {
 			while(true){
 				Message msg = (Message) input.readObject();
@@ -34,5 +35,26 @@ public class ConnectionThread implements Runnable{
 			e.printStackTrace();
 		}
 	}
-
+	
+	/** updates the connectionId with the cookie provided or treats the message normally*/
+	public void firstMessageRoutine(){
+		try {
+			Object obj = input.readObject();
+			if(obj instanceof Message){
+				Message msg = (Message) obj;
+				queueManager.message(connectionId, msg);
+			}else{
+				int cookieId = (int) obj;
+				updateConnectionId(this.connectionId,cookieId);
+				this.connectionId = cookieId;
+			}
+		} catch (ClassNotFoundException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void updateConnectionId(int oldId, int cookieId){
+		queueManager.updateConnectionId(oldId, cookieId);
+	}
 }

@@ -102,7 +102,7 @@ public class QueueManager implements Runnable{
 			}
 			
 		}else if(operation.equals(Operation.SUBSCRIBE)){
-			subscribe(connectionId, msg.getHeader().getTopic());	
+			subscribe(connectionId, msg.getHeader().getTopic());
 			
 		}else if (operation.equals(Operation.LIST)){
 			try {
@@ -139,7 +139,6 @@ public class QueueManager implements Runnable{
 		if(subs!=null){
 			for(Iterator<Integer> i = subs.iterator(); i.hasNext();){
 				int sub = i.next();
-				System.out.println(sub);
 				try {
 					serverHandler.send(sub, msg);
 				} catch (IOException e) {
@@ -156,6 +155,10 @@ public class QueueManager implements Runnable{
 		for(Integer at : remove){
 			subs.remove(at);
 		}
+	}
+	
+	public void updateConnectionId(int oldId, int cookieId){
+		serverHandler.updateConnectionId(oldId, cookieId);
 	}
 
 	public Message dequeue() {	

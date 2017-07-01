@@ -20,7 +20,7 @@ public class ConnectionIdRepository {
 				ois = new ObjectInputStream(new FileInputStream(file));
 				connectionId = (int) ois.readObject();
 				ois.close();
-				System.out.println("Restored Connection Id: "+ connectionId);
+				System.out.println("Restored Last Connection Id Used: "+ connectionId);
 			} catch (Exception e) {
 				e.printStackTrace();
 			} 
