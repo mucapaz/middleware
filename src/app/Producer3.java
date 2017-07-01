@@ -18,7 +18,6 @@ public class Producer3 {
 		Random rand = new Random();
 		
 		while(true){
-			
 			//Fila 1
 			proxy1.send("topic1", "Tópico 1, Fila 1" + rand.nextInt(10000), Operation.PUBLISH);
 			

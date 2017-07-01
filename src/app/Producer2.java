@@ -15,12 +15,10 @@ public class Producer2 {
 		int n = 0;
 		
 		while(true){
+			Thread.sleep(100);
 			n++;
 			String content = "Mensagem " + n;
 			proxy1.send("topic1", content, Operation.PUBLISH);
 		}
-			
-		
 	}
-
 }

@@ -19,39 +19,23 @@ public class QueueManagerProxy {
 	
 	public void requestTopics(){
 		Message message = MessageCreator.createMessage(Operation.LIST);
-		try {
-			crh.send(message);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		crh.send(message);
+
 	}
 	
 	public void subscribe(String topic){
 		Message message = MessageCreator.createMessage(topic, Operation.SUBSCRIBE);
-		
-		try {
-			crh.send(message);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		crh.send(message);
+
 	}
 	
 	public void send(String topic, Object content, Operation operation){
 		Message message = MessageCreator.createMessage(topic, content, operation);
-		try {
-			crh.send(message);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		crh.send(message);
+
 				
 	}
-	
-	
-	
-	
+
 	public Message receive(){
 		return crh.receive();
 	}

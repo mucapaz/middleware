@@ -65,15 +65,15 @@ public class Queue {
 	
 	public void  enqueue(Message message){
 		queue.add(message);
-		if(persist) 
-			saveQueue();
+		//if(persist) 
+		//	saveQueue();
 	}
 	
 	public Message dequeue(){
 		Message message;
 		message = queue.poll();
-		if(persist && message != null) //se a queue não estiver vazia, atualiza o novo estado no disco
-				saveQueue();
+		//if(persist && message != null) //se a queue não estiver vazia, atualiza o novo estado no disco
+		//		saveQueue();
 		return message;
 	}
 		
@@ -98,7 +98,7 @@ public class Queue {
 	
 
 	public String printQueue(){
-		readQueue();
+		//readQueue();
 		Iterator<Message> it = queue.iterator();
 		String result = "";
 		while(it.hasNext()){

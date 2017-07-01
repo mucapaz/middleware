@@ -34,6 +34,7 @@ public class ServerRequestHandler {
 			Socket clientSocket = socket.accept();
 			ObjectOutputStream output = new ObjectOutputStream(clientSocket.getOutputStream());
 			connectionCounter++;
+			System.out.println("Server Conecting");
 			connectionMap.put(connectionCounter, output);
 
 			ConnectionThread connection = new ConnectionThread(connectionCounter,
@@ -49,7 +50,7 @@ public class ServerRequestHandler {
 
 	
 	
-	public synchronized void send(int connectionId, Message msg) throws IOException{
+	public synchronized void send(int connectionId, Message msg) throws IOException,NullPointerException{
 		ObjectOutputStream output = connectionMap.get(connectionId);
 		
 		try {
@@ -63,8 +64,6 @@ public class ServerRequestHandler {
 			e.printStackTrace();
 
 			throw e;
-		} catch (NullPointerException e){
-			e.printStackTrace();
 		}
 	}
 
