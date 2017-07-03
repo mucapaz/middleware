@@ -34,8 +34,7 @@ public class Producer {
 			
 			
 			System.out.println("Producer sent");
-			
-//			Thread.sleep(5000);	
+			Thread.sleep(500);	
 		}
 		
 	}

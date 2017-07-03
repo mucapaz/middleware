@@ -61,7 +61,7 @@ public class Consumer implements Runnable{
 					proxy.subscribe(string);
 				}
 			}else{
-				System.out.println(name + " -> "  + msg.getPayload().getContent());
+				System.out.println(name + " -> "+" Message:" + msg.getPayload().getContent() + "; Topic: " + msg.getHeader().getTopic());
 			}				
 		}
 	}

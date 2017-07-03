@@ -1,5 +1,7 @@
 package infrastructure;
 
+import java.io.DataOutput;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
@@ -9,6 +11,8 @@ import java.util.Map;
 
 import distribution.QueueManager;
 import distribution.message.Message;
+import repositories.ConnectionIdRepository;
+import repositories.TopicSubscriberMapRepository;
 
 public class ServerRequestHandler {
 
@@ -18,7 +22,7 @@ public class ServerRequestHandler {
 	private ServerSocket socket;
 
 	private Map<Integer, ObjectOutputStream> connectionMap;
-	private int connectionCounter = 0;
+	private int connectionCounter = ConnectionIdRepository.readFromDisk();
 
 	public ServerRequestHandler(int port, QueueManager queueManager) throws IOException{
 		this.port = port;
@@ -26,16 +30,26 @@ public class ServerRequestHandler {
 		this.queueManager = queueManager;
 
 		this.connectionMap = new HashMap<Integer, ObjectOutputStream>();
+		
+		Runtime.getRuntime().addShutdownHook(new Thread(){
+			public void run(){
+				System.out.println("Running shutdown Hook at ServerRequestHandler.java");
+				ConnectionIdRepository.saveToDisk(connectionCounter);
+			}
+		});
 	}
 
 	public void connect(){
-
 		try {
 			Socket clientSocket = socket.accept();
 			ObjectOutputStream output = new ObjectOutputStream(clientSocket.getOutputStream());
 			connectionCounter++;
+			
+			System.out.println("Server Conecting");
 			connectionMap.put(connectionCounter, output);
-
+			output.writeObject(connectionCounter);
+			System.out.println("Sending cookie: " + connectionCounter);
+			
 			ConnectionThread connection = new ConnectionThread(connectionCounter,
 					clientSocket, queueManager);
 
@@ -49,7 +63,7 @@ public class ServerRequestHandler {
 
 	
 	
-	public synchronized void send(int connectionId, Message msg) throws IOException{
+	public synchronized void send(int connectionId, Message msg) throws IOException,NullPointerException{
 		ObjectOutputStream output = connectionMap.get(connectionId);
 		
 		try {
@@ -63,9 +77,13 @@ public class ServerRequestHandler {
 			e.printStackTrace();
 
 			throw e;
-		} catch (NullPointerException e){
-			e.printStackTrace();
 		}
 	}
-
+	
+	public synchronized void updateConnectionId(int oldId, int cookieId){
+		ObjectOutputStream output = connectionMap.get(oldId);
+		connectionMap.remove(oldId);
+		connectionMap.put(cookieId, output);
+		System.out.println("Updating connectionId " + oldId + " to " + cookieId);
+	}
 }

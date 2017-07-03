@@ -1,9 +1,6 @@
 package distribution;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -16,6 +13,7 @@ import distribution.message.Message;
 import distribution.message.MessageCreator;
 import distribution.message.Operation;
 import infrastructure.ServerRequestHandler;
+import repositories.TopicSubscriberMapRepository;
 
 public class QueueManager implements Runnable{
 
@@ -28,7 +26,6 @@ public class QueueManager implements Runnable{
 	private Queue queue;
 	
 	private ServerRequestHandler serverHandler;
-	
 	
 	public static void main(String[] args) throws IOException, InterruptedException{
 		
@@ -52,11 +49,18 @@ public class QueueManager implements Runnable{
 		
 		queue = new Queue();
 		
-		topicSubscribersMap = new HashMap<String, List<Integer>>();
+		topicSubscribersMap = TopicSubscriberMapRepository.readFromDisk();
 		
-		restoreQueueTopics();
+		//restoreQueueTopics();
 		
 		serverHandler = new ServerRequestHandler(port, this);
+		
+		Runtime.getRuntime().addShutdownHook(new Thread(){
+			public void run(){
+				System.out.println("Running shutdown Hook at QueueManager.java");
+				TopicSubscriberMapRepository.saveToDisk(topicSubscribersMap);
+			}
+		});
 		
 	}
 	
@@ -98,7 +102,7 @@ public class QueueManager implements Runnable{
 			}
 			
 		}else if(operation.equals(Operation.SUBSCRIBE)){
-			subscribe(connectionId, msg.getHeader().getTopic());	
+			subscribe(connectionId, msg.getHeader().getTopic());
 			
 		}else if (operation.equals(Operation.LIST)){
 			try {
@@ -130,21 +134,19 @@ public class QueueManager implements Runnable{
 		
 		String topic = msg.getHeader().getTopic();
 		
-		List<Integer> subs = topicSubscribersMap.get(topic);
-		
-			
-		List<Integer> remove = new ArrayList<Integer>();
+		List<Integer> subs = topicSubscribersMap.get(topic); //pega subs
 		
 		if(subs!=null){
-			for(Integer at : subs){
+			for(Iterator<Integer> i = subs.iterator(); i.hasNext();){
+				int sub = i.next();
 				try {
-					serverHandler.send(at, msg);
-					
-					remove.add(at);
-					
+					serverHandler.send(sub, msg);
 				} catch (IOException e) {
-					e.printStackTrace();
-				}	
+					
+				}catch(NullPointerException npe){
+					i.remove();
+					System.out.println("Removed Offline Subscriber from Topic: " + topic);
+				}
 			}
 		}
 	}
@@ -153,6 +155,10 @@ public class QueueManager implements Runnable{
 		for(Integer at : remove){
 			subs.remove(at);
 		}
+	}
+	
+	public void updateConnectionId(int oldId, int cookieId){
+		serverHandler.updateConnectionId(oldId, cookieId);
 	}
 
 	public Message dequeue() {	

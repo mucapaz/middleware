@@ -19,7 +19,7 @@ public class MessagePassThread implements Runnable{
 		
 		if(hasDelay){
 			try {
-				Thread.sleep(Config.delayAfterRestart);
+				Thread.sleep(Config.delayToSendMessagesAfterRestart);
 			} catch (InterruptedException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
