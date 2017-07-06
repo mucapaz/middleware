@@ -9,6 +9,8 @@ import distribution.message.Message;
 import distribution.message.Operation;
 
 public class Consumer implements Runnable{
+    private static final String TOPICS_NUMBER_MSG_FORMAT = "Topics number: %d";
+    private static final String PAYLOAD_MSG_FORMAT = "%s -> Message: %s; Topics: %s";
 
 	private QueueManagerProxy proxy;
 	private String name;
@@ -45,7 +47,7 @@ public class Consumer implements Runnable{
 				
 				String[] topicos = new String[objs.length];
 				
-				System.out.println("Número de tópicos: " + topicos.length);
+				System.out.println(String.format(TOPICS_NUMBER_MSG_FORMAT, topicos.length));
 				
 				for(int x=0;x<objs.length;x++){
 					
@@ -61,7 +63,7 @@ public class Consumer implements Runnable{
 					proxy.subscribe(string);
 				}
 			}else{
-				System.out.println(name + " -> "+" Message:" + msg.getPayload().getContent() + "; Topic: " + msg.getHeader().getTopic());
+				System.out.println(String.format(PAYLOAD_MSG_FORMAT, name, msg.getPayload().getContent(), msg.getHeader().getTopic()));
 			}				
 		}
 	}
